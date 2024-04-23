@@ -8,7 +8,8 @@ const Course = () => {
     const [categories, setCategories] = React.useState(null);
     const[courses, setCourses] = React.useState([]);
     const[loading, setLoading] = React.useState(false);
-    const [q, setQ] = React.useState("")
+    const[q, setQ] = React.useState("");
+    const[cateId, setCateId] = React.useState("");
 
 
     const loadCates = async () => {
@@ -22,8 +23,8 @@ const Course = () => {
 
     const loadCourse = async () => {
         try {
-            let url = `${endpoints['courses']}?q=${q}`
-            let res = await APIS.get(url)
+            let url = `${endpoints['courses']}?q=${q}&category_id=${cateId}`;
+            let res = await APIS.get(url);
             setCourses(res.data.results)
         } catch(ex) {
             console.log(console.error(ex))
@@ -38,18 +39,19 @@ const Course = () => {
 
     React.useEffect(() => {
         loadCourse();
-    }, [q]);
+    }, [q, cateId]);
 
     return (
         <View style={[MyStyles.container]}>
             <View style={[MyStyles.row, MyStyles.wrap]}>
+                <Chip mode={!cateId?"flat":"outlined"} onPress={() => setCateId("")} style={MyStyles.margin} icon="shape">Tất cả</Chip>
                 {categories===null?<ActivityIndicator/>:<>
-                    {categories.map(c => <Chip style={MyStyles.margin} key={c.id} icon="shape">{c.name}</Chip>)}
+                    {categories.map(c => <Chip mode={c.id===cateId?"flat":"outlined"} onPress={() => setCateId(c.id)} style={MyStyles.margin} key={c.id} icon="shape">{c.name}</Chip>)}
                 </>}
             </View>
             <View>
             <Searchbar
-                placeholder="Nhap tu khoa..."
+                placeholder="Nhập từ khóa..."
                 onChangeText={setQ}
                 value={q}
             />
